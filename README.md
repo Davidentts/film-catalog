@@ -4,7 +4,7 @@
 
 ### Setup
 
-Right click 'url-shortener' -> Mark directory as -> Sources Root
+Right click 'film-catalog-source' -> Mark directory as -> Sources Root
 
 ### Run
 
