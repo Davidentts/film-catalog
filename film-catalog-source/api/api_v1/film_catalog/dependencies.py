@@ -6,12 +6,12 @@ from fastapi import (
 )
 
 from .crud import film_examples
-from schemas.film import Film
+from schemas.film import Movie
 
 
-def get_film_by_id(movie_id: int):
-    movie: Film | None = next(
-        (film for film in film_examples if film.movie_id == movie_id),
+def get_film_by_id(slug: str):
+    movie: Movie | None = next(
+        (film for film in film_examples if film.slug == slug),
         None,
     )
     if movie:
@@ -19,5 +19,5 @@ def get_film_by_id(movie_id: int):
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Film with id {movie_id} not found",
+        detail=f"Film with slug {slug} not found",
     )
