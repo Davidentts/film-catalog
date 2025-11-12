@@ -5,15 +5,12 @@ from fastapi import (
     HTTPException,
 )
 
-from .crud import film_examples
+from .crud import storage
 from schemas.film import Movie
 
 
-def get_film_by_id(slug: str):
-    movie: Movie | None = next(
-        (film for film in film_examples if film.slug == slug),
-        None,
-    )
+def get_movie_by_slug(slug: str):
+    movie: Movie | None = storage.get_by_slug(slug)
     if movie:
         return movie
 

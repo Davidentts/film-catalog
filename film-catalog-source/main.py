@@ -21,7 +21,7 @@ def read_root(
         query="",
     )
     films_url = request.url.replace(
-        path="/films",
+        path="/api/v1/films",
         query="",
     )
     return {

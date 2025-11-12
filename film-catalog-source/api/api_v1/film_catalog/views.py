@@ -6,23 +6,29 @@ from fastapi import (
     status,
 )
 
-from .crud import film_examples
-from .dependencies import get_film_by_id
+from .crud import storage
+from .dependencies import get_movie_by_slug
 from schemas.film import Movie, MovieCreate
 
 router = APIRouter(prefix="/films", tags=["Films"])
 
 
-@router.get("/")
-def read_list_of_films() -> list[str]:
-    return [film.name for film in film_examples]
+@router.get(
+    "/",
+    response_model=list[Movie],
+)
+def read_list_of_films() -> list[Movie]:
+    return storage.get()
 
 
-@router.get("/{slug}")
+@router.get(
+    "/{slug}",
+    response_model=Movie,
+)
 def read_film(
     movie: Annotated[
         Movie,
-        Depends(get_film_by_id),
+        Depends(get_movie_by_slug),
     ],
 ) -> Movie:
     return movie
@@ -34,8 +40,6 @@ def read_film(
     status_code=status.HTTP_201_CREATED,
 )
 def create_film(
-    film_create: MovieCreate,
+    movie_create: MovieCreate,
 ) -> Movie:
-    return Movie(
-        **film_create.model_dump(),
-    )
+    return storage.create(movie_create)
