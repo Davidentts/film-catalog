@@ -1,15 +1,28 @@
 from datetime import date
 from typing import Annotated
 
-from annotated_types import Len, Le
+from annotated_types import Len, Le, MaxLen
 from pydantic import BaseModel, ConfigDict, Field
 
 
 class MovieBase(BaseModel):
-    slug: str
-    name: str
-    description: str
-    date_of_creation: date
+    name: Annotated[
+        str,
+        Len(min_length=1, max_length=129),
+    ]
+    synopsis: Annotated[
+        str,
+        MaxLen(max_length=1000),
+    ] = ""
+    execute_producer: list[str] = []
+    screenwriter: str = ""
+    genre: list[str] = []
+    release_date: Annotated[
+        date,
+        Le(le=date.today()),
+    ]
+    original_language: str = ""
+    cast: list[str] = []
 
 
 class MovieCreate(MovieBase):
@@ -17,21 +30,28 @@ class MovieCreate(MovieBase):
     Model for creating a film
     """
 
-    name: Annotated[
+    slug: str
+
+
+class MovieUpdate(MovieBase):
+    """
+    Model for updating a movie
+    """
+
+    synopsis: Annotated[
         str,
-        Len(min_length=1, max_length=129),
+        MaxLen(max_length=1000),
     ]
-    description: Annotated[
-        str,
-        Len(min_length=1, max_length=500),
-    ]
-    date_of_creation: Annotated[
-        date,
-        Le(le=date.today()),
-    ]
+    execute_producer: list[str]
+    screenwriter: str
+    genre: list[str]
+    original_language: str
+    cast: list[str]
 
 
 class Movie(MovieBase):
     """
     Model of a film
     """
+
+    slug: str

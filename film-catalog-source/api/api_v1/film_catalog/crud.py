@@ -2,7 +2,7 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from schemas.movie import Movie, MovieCreate
+from schemas.movie import Movie, MovieCreate, MovieUpdate
 
 
 class MovieStorage(BaseModel):
@@ -27,6 +27,15 @@ class MovieStorage(BaseModel):
     def delete(self, movie: Movie) -> None:
         self.delete_by_slug(movie.slug)
 
+    def update(
+        self,
+        movie: Movie,
+        movie_in: MovieUpdate,
+    ) -> Movie:
+        for field_name, value in movie_in:
+            setattr(movie, field_name, value)
+        return movie
+
 
 storage = MovieStorage()
 
@@ -34,15 +43,15 @@ storage.create(
     MovieCreate(
         slug="1",
         name="Омерзительная восьмёрка",
-        description="Example",
-        date_of_creation=date(2016, 1, 1),
+        synopsis="Example",
+        release_date=date(2016, 1, 1),
     )
 )
 storage.create(
     MovieCreate(
         slug="2",
         name="Бесславные ублюдки",
-        description="Example",
-        date_of_creation=date(2009, 8, 20),
+        synopsis="Example",
+        release_date=date(2009, 8, 20),
     )
 )
