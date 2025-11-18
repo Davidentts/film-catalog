@@ -2,7 +2,7 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from schemas.film import Movie, MovieCreate
+from schemas.movie import Movie, MovieCreate
 
 
 class MovieStorage(BaseModel):

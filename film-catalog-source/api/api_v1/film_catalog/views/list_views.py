@@ -4,7 +4,7 @@ from fastapi import (
 )
 
 from api.api_v1.film_catalog.crud import storage
-from schemas.film import Movie, MovieCreate
+from schemas.movie import Movie, MovieCreate
 
 router = APIRouter(prefix="/films", tags=["Films"])
 

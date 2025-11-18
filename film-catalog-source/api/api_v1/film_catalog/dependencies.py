@@ -6,7 +6,7 @@ from fastapi import (
 )
 
 from .crud import storage
-from schemas.film import Movie
+from schemas.movie import Movie
 
 
 def get_movie_by_slug(slug: str):
