@@ -67,9 +67,20 @@ class MoviePartialUpdate(MovieBase):
     cast: list[str] | None = None
 
 
+class MovieRead(MovieBase):
+    """
+    Model for reading a movie
+    """
+
+    slug: str
+
+
 class Movie(MovieBase):
     """
     Model of a film
     """
 
     slug: str
+    notes: str = ""
+    internal_rating: float = 0.0
+    visits: int = 0

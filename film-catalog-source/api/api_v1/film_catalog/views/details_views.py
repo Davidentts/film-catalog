@@ -5,7 +5,7 @@ from starlette import status
 
 from api.api_v1.film_catalog.crud import storage
 from api.api_v1.film_catalog.dependencies import get_movie_by_slug
-from schemas.movie import Movie, MovieUpdate, MoviePartialUpdate
+from schemas.movie import Movie, MovieUpdate, MoviePartialUpdate, MovieRead
 
 router = APIRouter(
     prefix="/{slug}",
@@ -31,7 +31,7 @@ MovieBySlug = Annotated[
 
 @router.get(
     "/",
-    response_model=Movie,
+    response_model=MovieRead,
 )
 def read_film(movie: MovieBySlug) -> Movie:
     return movie
@@ -47,7 +47,7 @@ def delete_movie(movie: MovieBySlug) -> None:
 
 @router.put(
     "/",
-    response_model=Movie,
+    response_model=MovieRead,
 )
 def update_movie_details(
     movie: MovieBySlug,
@@ -61,7 +61,7 @@ def update_movie_details(
 
 @router.patch(
     "/",
-    response_model=Movie,
+    response_model=MovieRead,
 )
 def update_movie_details(
     movie: MovieBySlug,
