@@ -1,12 +1,23 @@
-from datetime import date
-
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from schemas.movie import Movie, MovieCreate, MovieUpdate, MoviePartialUpdate
+
+from core.config import FILMS_STORAGE_FILEPATH
 
 
 class MovieStorage(BaseModel):
     slug_to_movie: dict[str, Movie] = {}
+
+    def save_state(self):
+        FILMS_STORAGE_FILEPATH.write_text(
+            self.model_dump_json(indent=2), encoding="utf-8"
+        )
+
+    @classmethod
+    def from_state(cls):
+        if not FILMS_STORAGE_FILEPATH.exists():
+            return MovieStorage()
+        return cls.model_validate_json(FILMS_STORAGE_FILEPATH.read_text())
 
     def get(self) -> list[Movie]:
         return list(self.slug_to_movie.values())
@@ -19,10 +30,12 @@ class MovieStorage(BaseModel):
             **movie_in.model_dump(),
         )
         self.slug_to_movie[movie_in.slug] = movie
+        self.save_state()
         return movie
 
     def delete_by_slug(self, slug: str) -> None:
         self.slug_to_movie.pop(slug, None)
+        self.save_state()
 
     def delete(self, movie: Movie) -> None:
         self.delete_by_slug(movie.slug)
@@ -34,6 +47,7 @@ class MovieStorage(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in:
             setattr(movie, field_name, value)
+        self.save_state()
         return movie
 
     def update_partial(
@@ -43,24 +57,12 @@ class MovieStorage(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in.model_dump(exclude_unset=True).items():
             setattr(movie, field_name, value)
+        self.save_state()
         return movie
 
 
-storage = MovieStorage()
-
-storage.create(
-    MovieCreate(
-        slug="1",
-        name="Омерзительная восьмёрка",
-        synopsis="Example",
-        release_date=date(2016, 1, 1),
-    )
-)
-storage.create(
-    MovieCreate(
-        slug="2",
-        name="Бесславные ублюдки",
-        synopsis="Example",
-        release_date=date(2009, 8, 20),
-    )
-)
+try:
+    storage = MovieStorage.from_state()
+except ValidationError:
+    storage = MovieStorage()
+    storage.save_state()
