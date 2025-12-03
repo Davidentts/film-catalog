@@ -63,7 +63,7 @@ def update_movie_details(
     "/",
     response_model=MovieRead,
 )
-def update_movie_details(
+def update_movie_details_partial(
     movie: MovieBySlug,
     movie_in: MoviePartialUpdate,
 ):
