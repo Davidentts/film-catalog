@@ -2,9 +2,13 @@ import logging
 
 from pydantic import BaseModel, ValidationError
 
-from schemas.movie import Movie, MovieCreate, MovieUpdate, MoviePartialUpdate
-
 from core.config import FILMS_STORAGE_FILEPATH
+from schemas.movie import (
+    Movie,
+    MovieCreate,
+    MovieUpdate,
+    MoviePartialUpdate,
+)
 
 log = logging.getLogger(__name__)
 
@@ -49,7 +53,6 @@ class MovieStorage(BaseModel):
             **movie_in.model_dump(),
         )
         self.slug_to_movie[movie_in.slug] = movie
-        self.save_state()
         log.info(
             "New movie was created with name: %s and slug: %s",
             movie.name,
@@ -59,7 +62,6 @@ class MovieStorage(BaseModel):
 
     def delete_by_slug(self, slug: str) -> None:
         self.slug_to_movie.pop(slug, None)
-        self.save_state()
 
     def delete(self, movie: Movie) -> None:
         self.delete_by_slug(movie.slug)
@@ -71,7 +73,7 @@ class MovieStorage(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in:
             setattr(movie, field_name, value)
-        self.save_state()
+
         return movie
 
     def update_partial(
@@ -81,7 +83,7 @@ class MovieStorage(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in.model_dump(exclude_unset=True).items():
             setattr(movie, field_name, value)
-        self.save_state()
+
         return movie
 
 
