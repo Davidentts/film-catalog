@@ -5,12 +5,15 @@ from fastapi import (
     status,
     HTTPException,
     BackgroundTasks,
+    Request,
 )
 
 from schemas.movie import Movie
 from .crud import storage
 
 log = logging.getLogger(__name__)
+
+UNSAFE_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
 
 
 def get_movie_by_slug(slug: str):
@@ -24,7 +27,11 @@ def get_movie_by_slug(slug: str):
     )
 
 
-def save_storage_state(background_tasks: BackgroundTasks):
+def save_storage_state(
+    background_tasks: BackgroundTasks,
+    request: Request,
+):
     yield
-    log.info("Add background task to save storage state.")
-    background_tasks.add_task(storage.save_state)
+    if request.method in UNSAFE_METHODS:
+        log.info("Add background task to save storage state.")
+        background_tasks.add_task(storage.save_state)
