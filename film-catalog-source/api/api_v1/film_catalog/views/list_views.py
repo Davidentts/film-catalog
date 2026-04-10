@@ -1,7 +1,10 @@
 from fastapi import APIRouter, status, Depends
 
 from api.api_v1.film_catalog.crud import storage
-from api.api_v1.film_catalog.dependencies import save_storage_state
+from api.api_v1.film_catalog.dependencies import (
+    save_storage_state,
+    api_token_required_for_unsafe_methods,
+)
 from schemas.movie import (
     Movie,
     MovieCreate,
@@ -11,7 +14,22 @@ from schemas.movie import (
 router = APIRouter(
     prefix="/films",
     tags=["Films"],
-    dependencies=[Depends(save_storage_state, scope="function")],
+    dependencies=[
+        Depends(api_token_required_for_unsafe_methods),
+        Depends(save_storage_state, scope="function"),
+    ],
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Unauthenticated. Only for unsafe methods.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Invalid API token",
+                    }
+                }
+            },
+        }
+    },
 )
 
 
