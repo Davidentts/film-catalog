@@ -44,6 +44,9 @@ class AbstractUsersHelper(ABC):
         :return:
         """
         db_password = self.get_user_password(username)
+        if not db_password:
+            return False
+
         return self.check_password(
             password1=password,
             password2=db_password,
