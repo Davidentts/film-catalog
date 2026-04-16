@@ -1,0 +1,31 @@
+from core import config
+from .users_helper import AbstractUsersHelper
+from redis import Redis
+
+
+class RedisUsersHelper(AbstractUsersHelper):
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        db: int,
+    ):
+        self.redis_users = Redis(
+            host=host,
+            port=port,
+            db=db,
+            decode_responses=True,
+        )
+
+    def get_user_password(
+        self,
+        username: str,
+    ) -> str | None:
+        return self.redis_users.get(username)
+
+
+redis_users = RedisUsersHelper(
+    host=config.REDIS_HOST,
+    port=config.REDIS_PORT,
+    db=config.REDIS_DB_USERS,
+)

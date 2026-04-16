@@ -4,6 +4,7 @@ from api.api_v1.film_catalog.crud import storage
 from api.api_v1.film_catalog.dependencies import (
     save_storage_state,
     api_token_required_for_unsafe_methods,
+    user_basic_auth_required_for_unsafe_methods,
 )
 from schemas.movie import (
     Movie,
@@ -15,7 +16,8 @@ router = APIRouter(
     prefix="/films",
     tags=["Films"],
     dependencies=[
-        Depends(api_token_required_for_unsafe_methods),
+        # Depends(api_token_required_for_unsafe_methods),
+        Depends(user_basic_auth_required_for_unsafe_methods),
         Depends(save_storage_state, scope="function"),
     ],
     responses={

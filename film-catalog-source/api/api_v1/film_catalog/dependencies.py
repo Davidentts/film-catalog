@@ -12,9 +12,11 @@ from fastapi import (
 from fastapi.security import (
     HTTPBearer,
     HTTPAuthorizationCredentials,
+    HTTPBasic,
+    HTTPBasicCredentials,
 )
 
-from api.api_v1.auth.services import redis_tokens
+from api.api_v1.auth.services import redis_tokens, redis_users
 from schemas.movie import Movie
 from .crud import storage
 
@@ -32,6 +34,12 @@ UNSAFE_METHODS = frozenset(
 api_static_token = HTTPBearer(
     scheme_name="Static API token",
     description="Your **Static API token** from the developer portal. [Read more](#)",
+    auto_error=False,
+)
+
+user_basic_auth = HTTPBasic(
+    scheme_name="Basic Auth",
+    description="Basic username and password authentication. [Read more](#)",
     auto_error=False,
 )
 
@@ -57,7 +65,7 @@ def save_storage_state(
         background_tasks.add_task(storage.save_state)
 
 
-def validate_api_token(api_token: HTTPAuthorizationCredentials):
+def validate_api_token(api_token: HTTPAuthorizationCredentials) -> None:
     if redis_tokens.token_exists(api_token.credentials):
         return
 
@@ -73,7 +81,7 @@ def api_token_required_for_unsafe_methods(
         HTTPAuthorizationCredentials,
         Depends(api_static_token),
     ] = None,
-):
+) -> None:
     if request.method not in UNSAFE_METHODS:
         return None
 
@@ -83,4 +91,37 @@ def api_token_required_for_unsafe_methods(
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="You must provide an API token",
+    )
+
+
+def validate_basic_auth(credentials: HTTPBasicCredentials) -> None:
+    if redis_users.validate_user_password(
+        username=credentials.username,
+        password=credentials.password,
+    ):
+        return
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Username or password is invalid",
+    )
+
+
+def user_basic_auth_required_for_unsafe_methods(
+    request: Request,
+    credentials: Annotated[
+        HTTPBasicCredentials,
+        Depends(user_basic_auth),
+    ],
+):
+    if request.method not in UNSAFE_METHODS:
+        return None
+
+    if credentials:
+        return validate_basic_auth(credentials)
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Username and password is required",
+        headers={"WWW-Authenticate": "Basic"},
     )
