@@ -1,8 +1,9 @@
 import logging
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
+from redis import Redis
 
-from core.config import FILMS_STORAGE_FILEPATH
+from core import config
 from schemas.movie import (
     Movie,
     MovieCreate,
@@ -12,47 +13,43 @@ from schemas.movie import (
 
 log = logging.getLogger(__name__)
 
+redis_movies = Redis(
+    host=config.REDIS_HOST,
+    port=config.REDIS_PORT,
+    db=config.REDIS_DB_MOVIES,
+    decode_responses=True,
+)
+
 
 class MovieStorage(BaseModel):
-    slug_to_movie: dict[str, Movie] = {}
 
-    def save_state(self):
-        FILMS_STORAGE_FILEPATH.write_text(
-            self.model_dump_json(indent=2), encoding="utf-8"
+    def save_movie(self, movie: Movie):
+        redis_movies.hset(
+            name=config.REDIS_MOVIES_HASH_NAME,
+            key=movie.slug,
+            value=movie.model_dump_json(),
         )
-        log.info("Saved films to storage file.")
-
-    @classmethod
-    def from_state(cls) -> "MovieStorage":
-        if not FILMS_STORAGE_FILEPATH.exists():
-            log.warning("Films storage file does not exist.")
-            return MovieStorage()
-        return cls.model_validate_json(FILMS_STORAGE_FILEPATH.read_text())
-
-    def init_storage_from_state(self) -> None:
-        try:
-            data = MovieStorage.from_state()
-        except ValidationError:
-            self.save_state()
-            log.warning("Rewritten storage file due to validation error.")
-            return
-
-        self.slug_to_movie.update(
-            data.slug_to_movie,
-        )
-        log.warning("Films storage loaded.")
 
     def get(self) -> list[Movie]:
-        return list(self.slug_to_movie.values())
+        return [
+            Movie.model_validate_json(movie)
+            for movie in redis_movies.hvals(name=config.REDIS_MOVIES_HASH_NAME)
+        ]
 
     def get_by_slug(self, slug: str) -> Movie | None:
-        return self.slug_to_movie.get(slug)
+        if data := redis_movies.hget(
+            name=config.REDIS_MOVIES_HASH_NAME,
+            key=slug,
+        ):
+            return Movie.model_validate_json(data)
+
+        return None
 
     def create(self, movie_in: MovieCreate) -> Movie:
         movie = Movie(
             **movie_in.model_dump(),
         )
-        self.slug_to_movie[movie_in.slug] = movie
+        self.save_movie(movie)
         log.info(
             "New movie was created with name: %s and slug: %s",
             movie.name,
@@ -61,7 +58,10 @@ class MovieStorage(BaseModel):
         return movie
 
     def delete_by_slug(self, slug: str) -> None:
-        self.slug_to_movie.pop(slug, None)
+        redis_movies.hdel(
+            config.REDIS_MOVIES_HASH_NAME,
+            slug,
+        )
 
     def delete(self, movie: Movie) -> None:
         self.delete_by_slug(movie.slug)
@@ -73,7 +73,7 @@ class MovieStorage(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in:
             setattr(movie, field_name, value)
-
+        self.save_movie(movie)
         return movie
 
     def update_partial(
@@ -83,7 +83,7 @@ class MovieStorage(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in.model_dump(exclude_unset=True).items():
             setattr(movie, field_name, value)
-
+        self.save_movie(movie)
         return movie
 
 
