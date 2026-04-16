@@ -125,3 +125,28 @@ def user_basic_auth_required_for_unsafe_methods(
         detail="Username and password is required",
         headers={"WWW-Authenticate": "Basic"},
     )
+
+
+def api_token_or_basic_auth_for_unsafe_methods(
+    request: Request,
+    api_token: Annotated[
+        HTTPAuthorizationCredentials | None,
+        Depends(api_static_token),
+    ] = None,
+    credentials: Annotated[
+        HTTPBasicCredentials | None,
+        Depends(user_basic_auth),
+    ] = None,
+):
+    if request.method not in UNSAFE_METHODS:
+        return None
+
+    if api_token:
+        return validate_api_token(api_token)
+    if credentials:
+        return validate_basic_auth(credentials)
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Api token or basic auth is required",
+    )
