@@ -14,7 +14,7 @@ from fastapi.security import (
     HTTPAuthorizationCredentials,
 )
 
-from core.config import API_TOKENS
+from api.api_v1.auth.services import redis_tokens
 from schemas.movie import Movie
 from .crud import storage
 
@@ -57,6 +57,16 @@ def save_storage_state(
         background_tasks.add_task(storage.save_state)
 
 
+def validate_api_token(api_token: HTTPAuthorizationCredentials):
+    if redis_tokens.token_exists(api_token.credentials):
+        return
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid API token",
+    )
+
+
 def api_token_required_for_unsafe_methods(
     request: Request,
     api_token: Annotated[
@@ -65,16 +75,12 @@ def api_token_required_for_unsafe_methods(
     ] = None,
 ):
     if request.method not in UNSAFE_METHODS:
-        return
+        return None
 
-    if not api_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You must provide an API token",
-        )
+    if api_token:
+        return validate_api_token(api_token)
 
-    if api_token.credentials not in API_TOKENS:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid API token",
-        )
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="You must provide an API token",
+    )
