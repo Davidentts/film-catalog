@@ -20,6 +20,14 @@ class AbstractTokensHelper(ABC):
         :return:
         """
 
+    @abstractmethod
+    def delete_token(self, token: str) -> bool:
+        """
+        Delete token from storage
+        :param token:
+        :return: True if token deleted, else False
+        """
+
     @classmethod
     def generate_token(cls, nbytes: int = 32) -> str:
         return secrets.token_urlsafe(nbytes=nbytes)
@@ -28,3 +36,11 @@ class AbstractTokensHelper(ABC):
         token = self.generate_token(nbytes)
         self.add_token(token)
         return token
+
+    @abstractmethod
+    def get_tokens(self) -> list[str]:
+        """
+        Get all tokens from storage
+
+        :return: list of tokens
+        """
