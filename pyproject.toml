@@ -7,4 +7,5 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]>=0.135.2",
     "redis[hiredis]>=7.4.0",
+    "typer>=0.24.1",
 ]
