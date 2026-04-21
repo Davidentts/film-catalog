@@ -13,7 +13,7 @@ class AbstractTokensHelper(ABC):
         """
 
     @abstractmethod
-    def add_token(self, token: str):
+    def add_token(self, token: str) -> None:
         """
         Save token to storage
         :param token:

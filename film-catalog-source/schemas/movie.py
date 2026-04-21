@@ -21,13 +21,13 @@ ReleaseDate = Annotated[
 
 class MovieBase(BaseModel):
     name: NameString
-    synopsis: SynopsisString = ""
-    execute_producer: list[str] = []
-    screenwriter: str = ""
-    genre: list[str] = []
+    synopsis: SynopsisString
+    execute_producer: list[str]
+    screenwriter: str
+    genre: list[str]
     release_date: ReleaseDate
-    original_language: str = ""
-    cast: list[str] = []
+    original_language: str
+    cast: list[str]
 
 
 class MovieCreate(MovieBase):
@@ -36,6 +36,12 @@ class MovieCreate(MovieBase):
     """
 
     slug: str
+    synopsis: SynopsisString = ""
+    execute_producer: list[str] = []
+    screenwriter: str = ""
+    genre: list[str] = []
+    original_language: str = ""
+    cast: list[str] = []
 
 
 class MovieUpdate(MovieBase):
@@ -43,15 +49,8 @@ class MovieUpdate(MovieBase):
     Model for updating a movie
     """
 
-    synopsis: SynopsisString
-    execute_producer: list[str]
-    screenwriter: str
-    genre: list[str]
-    original_language: str
-    cast: list[str]
 
-
-class MoviePartialUpdate(MovieBase):
+class MoviePartialUpdate(BaseModel):
     """
     Model for partial updating information
     about a movie

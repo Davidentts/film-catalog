@@ -1,3 +1,6 @@
+from collections.abc import Iterable
+from typing import cast
+
 from redis import Redis
 
 from core import config
@@ -28,7 +31,7 @@ class RedisTokensHelper(AbstractTokensHelper):
             )
         )
 
-    def add_token(self, token: str):
+    def add_token(self, token: str) -> None:
         self.redis_tokens.sadd(self.tokens_set, token)
 
     def delete_token(self, token: str) -> bool:
@@ -40,7 +43,12 @@ class RedisTokensHelper(AbstractTokensHelper):
         )
 
     def get_tokens(self) -> list[str]:
-        return list(self.redis_tokens.smembers(self.tokens_set))
+        return list(
+            cast(
+                set[str],
+                self.redis_tokens.smembers(self.tokens_set),
+            )
+        )
 
 
 redis_tokens = RedisTokensHelper(

@@ -1,4 +1,6 @@
 import logging
+from collections.abc import Iterable
+from typing import cast
 
 from pydantic import BaseModel
 from redis import Redis
@@ -35,7 +37,7 @@ class MovieAlreadyExists(MovieBaseError):
 
 class MovieStorage(BaseModel):
 
-    def save_movie(self, movie: Movie):
+    def save_movie(self, movie: Movie) -> None:
         redis_movies.hset(
             name=config.REDIS_MOVIES_HASH_NAME,
             key=movie.slug,
@@ -45,7 +47,10 @@ class MovieStorage(BaseModel):
     def get(self) -> list[Movie]:
         return [
             Movie.model_validate_json(movie)
-            for movie in redis_movies.hvals(name=config.REDIS_MOVIES_HASH_NAME)
+            for movie in cast(
+                Iterable[str],
+                redis_movies.hvals(name=config.REDIS_MOVIES_HASH_NAME),
+            )
         ]
 
     def get_by_slug(self, slug: str) -> Movie | None:
@@ -53,14 +58,18 @@ class MovieStorage(BaseModel):
             name=config.REDIS_MOVIES_HASH_NAME,
             key=slug,
         ):
+            assert isinstance(data, str)
             return Movie.model_validate_json(data)
 
         return None
 
     def exists(self, slug: str) -> bool:
-        return redis_movies.hexists(
-            name=config.REDIS_MOVIES_HASH_NAME,
-            key=slug,
+        return cast(
+            bool,
+            redis_movies.hexists(
+                name=config.REDIS_MOVIES_HASH_NAME,
+                key=slug,
+            ),
         )
 
     def create(self, movie_in: MovieCreate) -> Movie:

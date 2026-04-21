@@ -1,5 +1,4 @@
 import logging
-from http.client import HTTPException
 from typing import Annotated
 
 from fastapi import (
@@ -43,7 +42,7 @@ user_basic_auth = HTTPBasic(
 )
 
 
-def get_movie_by_slug(slug: str):
+def get_movie_by_slug(slug: str) -> Movie:
     movie: Movie | None = storage.get_by_slug(slug)
     if movie:
         return movie
@@ -67,7 +66,7 @@ def validate_api_token(api_token: HTTPAuthorizationCredentials) -> None:
 def api_token_required_for_unsafe_methods(
     request: Request,
     api_token: Annotated[
-        HTTPAuthorizationCredentials,
+        HTTPAuthorizationCredentials | None,
         Depends(api_static_token),
     ] = None,
 ) -> None:
@@ -102,7 +101,7 @@ def user_basic_auth_required_for_unsafe_methods(
         HTTPBasicCredentials,
         Depends(user_basic_auth),
     ],
-):
+) -> None:
     if request.method not in UNSAFE_METHODS:
         return None
 
@@ -126,7 +125,7 @@ def api_token_or_basic_auth_for_unsafe_methods(
         HTTPBasicCredentials | None,
         Depends(user_basic_auth),
     ] = None,
-):
+) -> None:
     if request.method not in UNSAFE_METHODS:
         return None
 

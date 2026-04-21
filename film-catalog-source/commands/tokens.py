@@ -20,7 +20,7 @@ def check(
         str,
         typer.Argument(help="The token to check"),
     ],
-):
+) -> None:
     """
     Check if the passed token is valid - exists or not
     """
@@ -35,7 +35,7 @@ def check(
 
 
 @app.command(name="list")
-def list_tokens():
+def list_tokens() -> None:
     """
     Return all tokens from storage
     """
@@ -51,7 +51,7 @@ def add(
         str,
         typer.Argument(help="The token to add"),
     ],
-):
+) -> None:
     """
     Add a new token if not exists
     """
@@ -69,7 +69,7 @@ def create(
         int,
         typer.Argument(help="The length of the token"),
     ] = 32,
-):
+) -> None:
     """
     Create a new token and add it to storage
     """
@@ -83,7 +83,7 @@ def delete(
         str,
         typer.Argument(help="The token to delete"),
     ],
-):
+) -> None:
     """
     Remove a token from storage
     """
