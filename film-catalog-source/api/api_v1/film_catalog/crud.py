@@ -9,8 +9,8 @@ from core import config
 from schemas.movie import (
     Movie,
     MovieCreate,
-    MovieUpdate,
     MoviePartialUpdate,
+    MovieUpdate,
 )
 
 log = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ class MovieBaseError(Exception):
     """
 
 
-class MovieAlreadyExists(MovieBaseError):
+class MovieAlreadyExistsError(MovieBaseError):
     """
     Exception raised when a movie already exists
     """
@@ -88,7 +88,7 @@ class MovieStorage(BaseModel):
         if not self.exists(movie_in.slug):
             self.create(movie_in)
 
-        raise MovieAlreadyExists(movie_in.slug)
+        raise MovieAlreadyExistsError(movie_in.slug)
 
     def delete_by_slug(self, slug: str) -> None:
         redis_movies.hdel(

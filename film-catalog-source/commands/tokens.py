@@ -41,7 +41,7 @@ def list_tokens() -> None:
     """
     tokens = redis_tokens.get_tokens()
     print(Markdown("# Available API tokens"))
-    print(Markdown("\n- ".join([""] + tokens)))
+    print(Markdown("\n- ".join(["", *tokens])))
     print()
 
 
@@ -93,5 +93,5 @@ def delete(
 
     redis_tokens.delete_token(token)
     print(
-        f"Token: [bold green]{token}[/green bold] has been [bold red]removed[/red bold]"
+        f"Token: [bold green]{token}[/green bold] has been [bold red]removed[/red bold]",
     )

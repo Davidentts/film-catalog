@@ -1,9 +1,9 @@
-from collections.abc import Iterable
 from typing import cast
 
 from redis import Redis
 
 from core import config
+
 from .tokens_helper import AbstractTokensHelper
 
 
@@ -14,7 +14,7 @@ class RedisTokensHelper(AbstractTokensHelper):
         port: int,
         db: int,
         tokens_set_name: str,
-    ):
+    ) -> None:
         self.redis_tokens = Redis(
             host=host,
             port=port,
@@ -28,7 +28,7 @@ class RedisTokensHelper(AbstractTokensHelper):
             self.redis_tokens.sismember(
                 self.tokens_set,
                 token,
-            )
+            ),
         )
 
     def add_token(self, token: str) -> None:
@@ -47,7 +47,7 @@ class RedisTokensHelper(AbstractTokensHelper):
             cast(
                 set[str],
                 self.redis_tokens.smembers(self.tokens_set),
-            )
+            ),
         )
 
 

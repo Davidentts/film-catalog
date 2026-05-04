@@ -1,8 +1,10 @@
 from typing import cast
 
-from core import config
-from .users_helper import AbstractUsersHelper
 from redis import Redis
+
+from core import config
+
+from .users_helper import AbstractUsersHelper
 
 
 class RedisUsersHelper(AbstractUsersHelper):
@@ -11,7 +13,7 @@ class RedisUsersHelper(AbstractUsersHelper):
         host: str,
         port: int,
         db: int,
-    ):
+    ) -> None:
         self.redis_users = Redis(
             host=host,
             port=port,

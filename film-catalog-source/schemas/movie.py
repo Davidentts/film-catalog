@@ -1,9 +1,8 @@
-from datetime import date
+import datetime
 from typing import Annotated
 
-from annotated_types import Len, Le, MaxLen
-from pydantic import BaseModel, ConfigDict, Field
-
+from annotated_types import Le, Len, MaxLen
+from pydantic import BaseModel
 
 SynopsisString = Annotated[
     str,
@@ -14,8 +13,8 @@ NameString = Annotated[
     Len(min_length=1, max_length=129),
 ]
 ReleaseDate = Annotated[
-    date,
-    Le(le=date.today()),
+    datetime.date,
+    Le(le=datetime.datetime.now(datetime.UTC).date()),
 ]
 
 

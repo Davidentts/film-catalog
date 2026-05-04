@@ -1,8 +1,8 @@
 from typing import Annotated
 
 from fastapi import (
-    Depends,
     APIRouter,
+    Depends,
 )
 from starlette import status
 
@@ -10,9 +10,9 @@ from api.api_v1.film_catalog.crud import storage
 from api.api_v1.film_catalog.dependencies import get_movie_by_slug
 from schemas.movie import (
     Movie,
-    MovieUpdate,
     MoviePartialUpdate,
     MovieRead,
+    MovieUpdate,
 )
 
 router = APIRouter(

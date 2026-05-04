@@ -2,20 +2,21 @@ import logging
 from typing import Annotated
 
 from fastapi import (
-    status,
+    Depends,
     HTTPException,
     Request,
-    Depends,
+    status,
 )
 from fastapi.security import (
-    HTTPBearer,
     HTTPAuthorizationCredentials,
     HTTPBasic,
     HTTPBasicCredentials,
+    HTTPBearer,
 )
 
 from api.api_v1.auth.services import redis_tokens, redis_users
 from schemas.movie import Movie
+
 from .crud import storage
 
 log = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ UNSAFE_METHODS = frozenset(
         "PUT",
         "PATCH",
         "DELETE",
-    }
+    },
 )
 
 api_static_token = HTTPBearer(
