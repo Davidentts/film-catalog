@@ -6,6 +6,20 @@
 
 Right click 'film-catalog-source' -> Mark directory as -> Sources Root
 
+### Configure pre-commit
+
+Install pre-commit hook:
+```shell
+pre-commit install
+```
+
+### Install
+
+Install packages:
+```shell
+uv sync
+```
+
 ### Run
 
 Go to work dir
