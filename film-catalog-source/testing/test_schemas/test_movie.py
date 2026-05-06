@@ -1,6 +1,8 @@
 import datetime
 from unittest import TestCase
 
+from pydantic import ValidationError
+
 from schemas.movie import (
     Movie,
     MovieCreate,
@@ -135,3 +137,25 @@ class MovieTestCreateTestCase(TestCase):
         self.assertEqual(movie.genre, movie_for_update.genre)
         self.assertEqual(movie.original_language, movie_for_update.original_language)
         self.assertEqual(movie.cast, movie_for_update.cast)
+
+    def test_movie_name_too_short(self) -> None:
+        with self.assertRaises(ValidationError) as exec_info:
+            MovieCreate(
+                name="",
+                release_date=datetime.date(2020, 1, 1),
+                slug="",
+            )
+        error_details = exec_info.exception.errors()[0]
+        expected_error_type = "string_too_short"
+        self.assertEqual(
+            expected_error_type,
+            error_details["type"],
+        )
+
+    def test_movie_partial_release_date_has_non_zero_time(self) -> None:
+        with self.assertRaisesRegex(
+            ValidationError,
+            expected_regex="Datetimes provided to dates should have zero time",
+        ):
+            partial_movie = """{"release_date": "2020-01-01 12:59:59"}"""
+            MoviePartialUpdate.model_validate_json(partial_movie)
