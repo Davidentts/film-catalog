@@ -15,7 +15,7 @@ class MovieTestCreateTestCase(TestCase):
             name="Test Movie",
             release_date=datetime.date(2020, 1, 1),
             slug="test_slug",
-            synopsis="",
+            synopsis="A lot of words...",
             execute_producer=["Daiv", "Moris"],
             screenwriter="Alex",
             genre=["Horror", "Comedy"],
@@ -25,15 +25,14 @@ class MovieTestCreateTestCase(TestCase):
 
         movie = Movie(**movie_in.model_dump())
 
-        self.assertEqual(movie_in.name, movie.name)
-        self.assertEqual(movie_in.release_date, movie.release_date)
-        self.assertEqual(movie_in.slug, movie.slug)
-        self.assertEqual(movie_in.synopsis, movie.synopsis)
-        self.assertEqual(movie_in.execute_producer, movie.execute_producer)
-        self.assertEqual(movie_in.screenwriter, movie.screenwriter)
-        self.assertEqual(movie_in.genre, movie.genre)
-        self.assertEqual(movie_in.original_language, movie.original_language)
-        self.assertEqual(movie_in.cast, movie.cast)
+        for field, value_in in movie_in:
+            with self.subTest(
+                field=field,
+                value_in=value_in,
+                msg=f"Create field {field} is {value_in}",
+            ):
+                movie_value = getattr(movie, field)
+                self.assertEqual(value_in, movie_value)
 
     def test_movie_can_be_created_from_update_schema(self) -> None:
         movie = Movie(
