@@ -1,4 +1,5 @@
 import datetime
+from os import getenv
 from unittest import TestCase
 
 from pydantic import ValidationError
@@ -9,6 +10,10 @@ from schemas.movie import (
     MoviePartialUpdate,
     MovieUpdate,
 )
+
+if getenv("TESTING") != "1":
+    message = "Environment is not ready for testing"
+    raise OSError(message)
 
 
 class MovieTestCreateTestCase(TestCase):
