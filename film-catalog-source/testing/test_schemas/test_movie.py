@@ -1,5 +1,8 @@
 import datetime
+import random
+import string
 from os import getenv
+from typing import ClassVar
 from unittest import TestCase
 
 from pydantic import ValidationError
@@ -17,26 +20,32 @@ if getenv("TESTING") != "1":
     raise OSError(message)
 
 
+def create_movie() -> Movie:
+    movie_in = MovieCreate(
+        name="Test Movie",
+        release_date=datetime.date(2020, 1, 1),
+        slug="".join(
+            random.choices(  # noqa: S311
+                string.ascii_letters,
+                k=8,
+            ),
+        ),
+        synopsis="A lot of words...",
+        execute_producer=["Daiv", "Moris"],
+        screenwriter="Alex",
+        genre=["Horror", "Comedy"],
+        original_language="English",
+        cast=["Artur", "Morty"],
+    )
+    return storage.create(movie_in)
+
+
 class MovieTestCreateTestCase(TestCase):
     def setUp(self) -> None:
-        self.movie = self.create_movie()
+        self.movie = create_movie()
 
     def tearDown(self) -> None:
         storage.delete(self.movie)
-
-    def create_movie(self) -> Movie:
-        movie_in = MovieCreate(
-            name="Test Movie",
-            release_date=datetime.date(2020, 1, 1),
-            slug="test_movie",
-            synopsis="A lot of words...",
-            execute_producer=["Daiv", "Moris"],
-            screenwriter="Alex",
-            genre=["Horror", "Comedy"],
-            original_language="English",
-            cast=["Artur", "Morty"],
-        )
-        return storage.create(movie_in)
 
     def test_movie_can_be_created_from_create_schema(self) -> None:
         movie_in = MovieCreate(
@@ -128,3 +137,37 @@ class MovieTestCreateTestCase(TestCase):
         ):
             partial_movie = """{"release_date": "2020-01-01 12:59:59"}"""
             MoviePartialUpdate.model_validate_json(partial_movie)
+
+
+class MovieStorageGetMovieTestCase(TestCase):
+    MOVIES_COUNT = 3
+    movies: ClassVar[list[Movie]] = []
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.movies = [create_movie() for _ in range(cls.MOVIES_COUNT)]
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        for movie in cls.movies:
+            storage.delete(movie)
+
+    def test_get_list(self) -> None:
+        movies = storage.get()
+        expected_slugs = {movie.slug for movie in self.movies}
+        slugs = {movie.slug for movie in movies}
+        expected_diff = set[str]()
+        diff = expected_slugs - slugs
+        self.assertEqual(expected_diff, diff)
+
+    def test_get_by_slug(self) -> None:
+        for movie in self.movies:
+            with self.subTest(
+                movie=movie,
+                msg=f"Validate can get slug {movie.slug!r}",
+            ):
+                db_movie = storage.get_by_slug(movie.slug)
+                self.assertEqual(
+                    movie,
+                    db_movie,
+                )
