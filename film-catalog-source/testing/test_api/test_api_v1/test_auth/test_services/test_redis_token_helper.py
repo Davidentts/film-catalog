@@ -1,11 +1,6 @@
-from os import getenv
 from unittest import TestCase
 
 from api.api_v1.auth.services import redis_tokens
-
-if getenv("TESTING") != "1":
-    message = "Environment is not ready for testing"
-    raise OSError(message)
 
 
 class RedisTokenHelperTestCase(TestCase):

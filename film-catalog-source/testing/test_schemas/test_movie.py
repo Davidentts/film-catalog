@@ -1,7 +1,6 @@
 import datetime
 import random
 import string
-from os import getenv
 from typing import ClassVar
 from unittest import TestCase
 
@@ -14,10 +13,6 @@ from schemas.movie import (
     MoviePartialUpdate,
     MovieUpdate,
 )
-
-if getenv("TESTING") != "1":
-    message = "Environment is not ready for testing"
-    raise OSError(message)
 
 
 def create_movie() -> Movie:
