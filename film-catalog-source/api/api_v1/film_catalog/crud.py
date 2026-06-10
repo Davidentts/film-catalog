@@ -86,7 +86,7 @@ class MovieStorage(BaseModel):
 
     def create_or_raise_if_exists(self, movie_in: MovieCreate) -> Movie:
         if not self.exists(movie_in.slug):
-            self.create(movie_in)
+            return self.create(movie_in)
 
         raise MovieAlreadyExistsError(movie_in.slug)
 

@@ -28,13 +28,17 @@ def create_movie() -> Movie:
     return storage.create(movie_in)
 
 
-def test_create_or_raise_if_exists() -> None:
-    existing_movie = create_movie()
-    movie_create = MovieCreate(**existing_movie.model_dump())
+@pytest.fixture
+def movie() -> Movie:
+    return create_movie()
+
+
+def test_create_or_raise_if_exists(movie: Movie) -> None:
+    movie_create = MovieCreate(**movie.model_dump())
     with pytest.raises(
         MovieAlreadyExistsError,
-        match=existing_movie.slug,
+        match=movie_create.slug,
     ) as exc_info:
         storage.create_or_raise_if_exists(movie_create)
 
-    assert exc_info.value.args[0] == existing_movie.slug
+    assert exc_info.value.args[0] == movie_create.slug
