@@ -8,6 +8,10 @@ SynopsisString = Annotated[
     str,
     MaxLen(max_length=1000),
 ]
+SlugString = Annotated[
+    str,
+    Len(min_length=3, max_length=10),
+]
 NameString = Annotated[
     str,
     Len(min_length=1, max_length=129),
@@ -34,7 +38,7 @@ class MovieCreate(MovieBase):
     Model for creating a film
     """
 
-    slug: str
+    slug: SlugString
     synopsis: SynopsisString = ""
     execute_producer: list[str] = []
     screenwriter: str = ""
