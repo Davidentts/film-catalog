@@ -8,15 +8,15 @@ from fastapi.testclient import TestClient
 from api.api_v1.film_catalog.crud import storage
 from main import app
 from schemas.movie import SYNOPSIS_MAX_LENGTH, Movie
-from testing.conftest import create_movie
+from testing.conftest import create_movie_random_slug
 
 
 class TestUpdatePartial:
 
     @pytest.fixture()
     def movie(self, request: SubRequest) -> Generator[Movie]:
-        slug, synopsis = request.param
-        movie = create_movie(slug, synopsis)
+        synopsis = request.param
+        movie = create_movie_random_slug(synopsis=synopsis)
         yield movie
         storage.delete(movie)
 
@@ -24,22 +24,22 @@ class TestUpdatePartial:
         "movie, new_synopsis",
         [
             pytest.param(
-                ("foo_part", "some synopsis"),
+                "some synopsis",
                 "",
                 id="some-synopsis-to-no-synopsis",
             ),
             pytest.param(
-                ("bar_part", ""),
+                "",
                 "some synopsis",
                 id="no-synopsis-to-some-synopsis",
             ),
             pytest.param(
-                ("ham_part", "a" * SYNOPSIS_MAX_LENGTH),
+                "a" * SYNOPSIS_MAX_LENGTH,
                 "",
                 id="max-synopsis-to-no-synopsis",
             ),
             pytest.param(
-                ("spam_part", ""),
+                "",
                 "a" * SYNOPSIS_MAX_LENGTH,
                 id="no-synopsis-to-max-synopsis",
             ),
