@@ -4,9 +4,13 @@ from typing import Annotated
 from annotated_types import Le, Len, MaxLen
 from pydantic import BaseModel
 
+SYNOPSIS_MAX_LENGTH = 1000
+NAME_MAX_LENGTH = 129
+NAME_MIN_LENGTH = 1
+
 SynopsisString = Annotated[
     str,
-    MaxLen(max_length=1000),
+    MaxLen(max_length=SYNOPSIS_MAX_LENGTH),
 ]
 SlugString = Annotated[
     str,
@@ -14,7 +18,7 @@ SlugString = Annotated[
 ]
 NameString = Annotated[
     str,
-    Len(min_length=1, max_length=129),
+    Len(min_length=NAME_MIN_LENGTH, max_length=NAME_MAX_LENGTH),
 ]
 ReleaseDate = Annotated[
     datetime.date,
