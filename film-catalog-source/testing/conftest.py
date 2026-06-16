@@ -17,13 +17,13 @@ if getenv("TESTING") != "1":
 
 def build_movie_create(
     slug: str,
-    synopsys: str = "A lot of words...",
+    synopsis: str = "A lot of words...",
 ) -> MovieCreate:
     return MovieCreate(
         name="Test Movie",
         release_date=datetime.date(2020, 1, 1),
         slug=slug,
-        synopsis=synopsys,
+        synopsis=synopsis,
         execute_producer=["Daiv", "Moris"],
         screenwriter="Alex",
         genre=["Horror", "Comedy"],
@@ -33,7 +33,7 @@ def build_movie_create(
 
 
 def build_movie_create_random_slug(
-    synopsys: str = "A lot of words...",
+    synopsis: str = "A lot of words...",
 ) -> MovieCreate:
     return MovieCreate(
         name="Test Movie",
@@ -44,7 +44,7 @@ def build_movie_create_random_slug(
                 k=8,
             ),
         ),
-        synopsis=synopsys,
+        synopsis=synopsis,
         execute_producer=["Dave", "Moris"],
         screenwriter="Alex",
         genre=["Horror", "Comedy"],
@@ -61,11 +61,11 @@ def create_movie(
 
 
 def create_movie_random_slug(
-    synopsys: str = "A lot of words...",
+    synopsis: str = "A lot of words...",
 ) -> Movie:
     return storage.create(
         build_movie_create_random_slug(
-            synopsys=synopsys,
+            synopsis=synopsis,
         ),
     )
 
