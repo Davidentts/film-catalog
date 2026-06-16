@@ -15,12 +15,15 @@ if getenv("TESTING") != "1":
     )
 
 
-def build_movie_create(slug: str) -> MovieCreate:
+def build_movie_create(
+    slug: str,
+    synopsys: str = "A lot of words...",
+) -> MovieCreate:
     return MovieCreate(
         name="Test Movie",
         release_date=datetime.date(2020, 1, 1),
         slug=slug,
-        synopsis="A lot of words...",
+        synopsis=synopsys,
         execute_producer=["Daiv", "Moris"],
         screenwriter="Alex",
         genre=["Horror", "Comedy"],
@@ -29,7 +32,9 @@ def build_movie_create(slug: str) -> MovieCreate:
     )
 
 
-def build_movie_create_random_slug() -> MovieCreate:
+def build_movie_create_random_slug(
+    synopsys: str = "A lot of words...",
+) -> MovieCreate:
     return MovieCreate(
         name="Test Movie",
         release_date=datetime.date(2020, 1, 1),
@@ -39,7 +44,7 @@ def build_movie_create_random_slug() -> MovieCreate:
                 k=8,
             ),
         ),
-        synopsis="A lot of words...",
+        synopsis=synopsys,
         execute_producer=["Dave", "Moris"],
         screenwriter="Alex",
         genre=["Horror", "Comedy"],
@@ -48,16 +53,25 @@ def build_movie_create_random_slug() -> MovieCreate:
     )
 
 
-def create_movie(slug: str) -> Movie:
-    return storage.create(build_movie_create(slug))
+def create_movie(
+    slug: str,
+    synopsys: str = "A lot of words...",
+) -> Movie:
+    return storage.create(build_movie_create(slug, synopsys))
 
 
-def create_movie_create_random_slug() -> Movie:
-    return storage.create(build_movie_create_random_slug())
+def create_movie_random_slug(
+    synopsys: str = "A lot of words...",
+) -> Movie:
+    return storage.create(
+        build_movie_create_random_slug(
+            synopsys=synopsys,
+        ),
+    )
 
 
 @pytest.fixture
 def movie() -> Generator[Movie]:
-    movie = create_movie_create_random_slug()
+    movie = create_movie_random_slug()
     yield movie
     storage.delete(movie)
