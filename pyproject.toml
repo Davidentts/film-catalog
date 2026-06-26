@@ -21,6 +21,8 @@ dev = [
     "ruff>=0.15.12",
 ]
 
+# pytest settings
+
 [tool.pytest]
 minversion = "9.0"
 addopts = ["-ra"]
@@ -28,8 +30,15 @@ log_cli = false
 log_cli_level = "INFO"
 console_output_style = "progress"
 
+# mypy settings
+
 [tool.mypy]
 strict = true
+plugins = [
+    "pydantic.mypy",
+]
+
+# ruff settings
 
 [tool.ruff]
 required-version = ">=0.15.11"
