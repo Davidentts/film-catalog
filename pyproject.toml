@@ -29,6 +29,10 @@ addopts = ["-ra"]
 log_cli = false
 log_cli_level = "INFO"
 console_output_style = "progress"
+strict_markers = true
+markers = [
+    "apitest: test any http api call",
+]
 
 # mypy settings
 
