@@ -16,6 +16,7 @@ from schemas.movie import (
 from testing.conftest import create_movie_random_slug
 
 
+@pytest.mark.apitest
 class TestUpdate:
 
     @pytest.fixture()
