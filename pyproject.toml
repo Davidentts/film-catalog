@@ -33,6 +33,7 @@ strict_markers = true
 markers = [
     "apitest: test any http api call",
 ]
+xfail_strict = true
 
 # mypy settings
 

@@ -81,3 +81,12 @@ def update_movie_details_partial(
         movie=movie,
         movie_in=movie_in,
     )
+
+
+@router.post(
+    "/transfer/",
+)
+def transfer_movie(
+    movie: MovieBySlug,
+) -> dict[str, str]:
+    raise NotImplementedError
