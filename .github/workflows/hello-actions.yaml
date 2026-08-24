@@ -6,6 +6,6 @@ on:
 jobs:
   hello-job:
     runs-on: ubuntu-latest
-    stpeps:
+    steps:
       - name: My first step in GH Actions
         run: echo "Hello action!"
