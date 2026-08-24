@@ -11,8 +11,16 @@ on:
       - "film-catalog-source/**"
 
 jobs:
-  lint:
+  run-black:
     runs-on: ubuntu-latest
     steps:
-      - name: Placeholder GH Actions
-        run: echo "Hello Checks!"
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ".python_version"
+      - name: Install black
+        run: |
+          python -m pip install --upgrade pip
+          pip install "black==26.5.1"
+      - name: Black ⚫
+        run: black ./
