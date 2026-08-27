@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version-file: ".python-version"
+
       - name: Install black
         run: |
           python -m pip install --upgrade pip
@@ -26,19 +27,24 @@ jobs:
       - name: Black ⚫
         run: black --check --diff ./
 
-  run-mypy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+#  run-mypy:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v7
+#      - uses: actions/setup-python@v7
 
-      - name: Setup uv
+      - name: Setup uv 🛠️
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
           enable-cache: "true"
 
-      - name: Install the project
+      - name: Install the project dependecies 🔗
         run: uv sync --locked --all-extras --dev
+
+      - name: Run ruff 💎
+        uses: astral-sh/ruff-action@v4.1.0
+        with:
+          version-file: "pyproject.toml"
 
       - name: Run mypy
         run: uv run mypy film-catalog-source
