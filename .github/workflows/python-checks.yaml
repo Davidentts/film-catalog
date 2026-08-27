@@ -12,7 +12,7 @@ on:
       - "film-catalog-source/**"
 
 jobs:
-  run-black:
+  run-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -27,12 +27,6 @@ jobs:
       - name: Black ⚫
         run: black --check --diff ./
 
-#  run-mypy:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v7
-#      - uses: actions/setup-python@v7
-
       - name: Setup uv 🛠️
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
@@ -41,7 +35,13 @@ jobs:
       - name: Install the project dependecies 🔗
         run: uv sync --locked --all-extras --dev
 
-      - name: Run ruff 💎
+      - name: Run ruff --diff 💎
+        uses: astral-sh/ruff-action@v4.1.0
+        with:
+          args: "check --diff"
+          version-file: "pyproject.toml"
+
+      - name: Run ruff check 💎
         uses: astral-sh/ruff-action@v4.1.0
         with:
           version-file: "pyproject.toml"
