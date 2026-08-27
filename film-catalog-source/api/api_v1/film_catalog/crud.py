@@ -78,9 +78,7 @@ class MovieStorage(BaseModel):
         )
         self.save_movie(movie)
         log.info(
-            "New movie was created with name: %s and slug: %s",
-            movie.name,
-            movie.slug,
+            "New movie was created with name: %s and slug: %s", movie.name, movie.slug,
         )
         return movie
 
