@@ -1,5 +1,7 @@
 # Film catalog
 
+[![Python checks 🐍](https://github.com/Davidentts/film-catalog/actions/workflows/python-checks.yaml/badge.svg)](https://github.com/Davidentts/film-catalog/actions/workflows/python-checks.yaml)
+
 ## Develop
 
 ### Setup
