@@ -32,7 +32,7 @@ jobs:
         with:
           enable-cache: "true"
 
-      - name: Install the project dependecies 🔗
+      - name: Install the project dependencies 🔗
         run: uv sync --locked --all-extras --dev
 
       - name: Run ruff --diff 💎
@@ -54,4 +54,20 @@ jobs:
     needs:
       - run-checks
     steps:
-      - run: echo "Hello tests!"
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version-file: ".python-version"
+
+      - name: Setup uv 🛠️
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: "true"
+
+      - name: Install the project dependencies 🔗
+        run: uv sync --locked --all-extras --dev
+
+      - name: Run python tests
+        run: uv run pytest
+        env:
+          TESTING: 1
