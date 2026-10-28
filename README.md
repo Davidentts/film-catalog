@@ -7,7 +7,7 @@
 [![uv](https://img.shields.io/badge/package%20manager-uv-DE5FE9?style=for-the-badge&logo=astral&logoColor=white)](https://github.com/astral-sh/uv)
 [![Python](https://img.shields.io/badge/Python-3.14+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=for-the-badge)](https://github.com/pre-commit/pre-commit)
-[![codecov](https://codecov.io/gh/Davidentts/film-catalog/branch/master/graph/badge.svg?style=for-the-badge)](https://app.codecov.io/gh/Davidentts/film-catalog)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2FDavidentts%2F068690473a9474f135896778acc863f0%2Fraw%2Fcoverage.json&style=for-the-badge&logo=codecov)](https://github.com/Davidentts/film-catalog/actions/workflows/python-checks.yaml)
 
 ## Develop
 
